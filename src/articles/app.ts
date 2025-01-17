@@ -30,7 +30,7 @@ export function createArticle(title: string, content: string, date = new Date().
 }
 
 // Función para leer un artículo
-function readArticle(title) {
+function readArticle(title:string) {
   const fileName = `${title.replace(/[\s/\\?%*:|"<>]/g, '_')}.json`;
   const filePath = path.join(articlesDir, fileName);
 

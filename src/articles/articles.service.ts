@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Article } from './interfaces';
+
 
 @Injectable()
 export class ArticlesService {
@@ -35,15 +37,31 @@ export class ArticlesService {
       publishedAt: new Date().toISOString(),
     };
 
-    fs.writeFileSync(filePath, JSON.stringify(article, null, 2));
+    fs.writeFileSync(filePath, JSON.stringify(article));
     return `Article ${title} created successfully with ID ${id}.`;
   }
 
-  getAllArticles(): any[] {
+  getAllArticles(): Article[] {
     const files = fs.readdirSync(this.articlesDir);
     return files.map((file) => {
       const filePath = path.join(this.articlesDir, file);
       return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
     });
+  }
+
+  getArticleById(id: number): Article {
+    const files = fs.readdirSync(this.articlesDir);
+    const article = files
+      .map((file) => {
+        const filePath = path.join(this.articlesDir, file);
+        return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      })
+      .find((article) => article.id === id);
+
+    if (!article) {
+      throw new Error(`Article with ID ${id} not found.`);
+    }
+
+    return article;
   }
 }
