@@ -11,14 +11,13 @@ export class ArticlesController {
     return this.articlesService.createArticle(createArticleDto.title, createArticleDto.content);
   }
 
-  @Get("/article")
-  findAll(): any[] {
+  @Get()
+  findAll(): Article[] {
     return this.articlesService.getAllArticles();
   }
 
-  @Get("/article/:id")
-  findArticleId(@Param(':id') id:string): Article {
-    return this.articlesService.getArticleById(parseInt(id, 10));
+  @Get("/:id")
+  findArticleId(@Param('id') id: string): Article {
+    return this.articlesService.getArticleById(id);
   }
-
 }

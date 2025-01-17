@@ -1,8 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Article } from './interfaces';
 
+interface Article {
+  id: string;
+  date: string;
+  title: string;
+  content: string;
+  publishedAt: string;
+}
 
 @Injectable()
 export class ArticlesService {
@@ -26,10 +32,10 @@ export class ArticlesService {
   }
 
   createArticle(title: string, content: string): string {
-    const id = this.getNextId();
+    const id = this.getNextId().toString();
     const date = Date.now().toString();
     const filePath = path.join(this.articlesDir, `${title}.json`);
-    const article = {
+    const article: Article = {
       id,
       date,
       title,
@@ -42,24 +48,26 @@ export class ArticlesService {
   }
 
   getAllArticles(): Article[] {
-    const files = fs.readdirSync(this.articlesDir);
+    const files = fs.readdirSync(this.articlesDir).filter(file => file !== 'id-counter.txt');
     return files.map((file) => {
       const filePath = path.join(this.articlesDir, file);
-      return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as Article;
     });
   }
 
-  getArticleById(id: number): Article {
-    const files = fs.readdirSync(this.articlesDir);
+  getArticleById(id: string): Article {
+    const files = fs.readdirSync(this.articlesDir).filter(file => file !== 'id-counter.txt');
     const article = files
       .map((file) => {
         const filePath = path.join(this.articlesDir, file);
-        return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as Article;
       })
-      .find((article) => article.id === id);
+      .find((article) => {
+        return article.id === id;
+      });
 
     if (!article) {
-      throw new Error(`Article with ID ${id} not found.`);
+      throw new NotFoundException(`Article with ID ${id} not found.`);
     }
 
     return article;
