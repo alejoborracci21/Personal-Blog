@@ -10,7 +10,7 @@ if (!fs.existsSync(articlesDir)) {
 }
 
 // Función para crear un nuevo artículo
-export function createArticle(title, content, date = new Date().toISOString()) {
+export function createArticle(title: string, content: string, date = new Date().toISOString()) {
   const article = {
     title,
     content,

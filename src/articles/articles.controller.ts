@@ -5,12 +5,12 @@ import { ArticlesService } from './articles.service';
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
-  @Post()
+  @Post("/")
   createArticle(@Body() createArticleDto: { title: string; content: string }) {
     return this.articlesService.createArticle(createArticleDto.title, createArticleDto.content);
   }
 
-  @Get()
+  @Get("/")
   findAll(): any[] {
     return this.articlesService.getAllArticles();
   }
