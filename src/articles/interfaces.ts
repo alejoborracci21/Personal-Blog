@@ -1,6 +1,7 @@
 export interface Article {
-    id: string;
-    date: string;
-    title: string;
-    content: string;
-  }
+  id: string;
+  date: string;
+  title: string;
+  content: string;
+  publishedAt: string;
+}

@@ -1,14 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
-
-interface Article {
-  id: string;
-  date: string;
-  title: string;
-  content: string;
-  publishedAt: string;
-}
+import { Article } from './interfaces';
 
 @Injectable()
 export class ArticlesService {
@@ -70,6 +63,18 @@ export class ArticlesService {
       throw new NotFoundException(`Article with ID ${id} not found.`);
     }
 
+    return article;
+  }
+
+  updateArticle(id: string, title: string, content: string): Article {
+    const article = this.getArticleById(id);
+    if (article) {
+      article.title = title;
+      article.content = content;
+      article.publishedAt = new Date().toISOString();
+      const filePath = path.join(this.articlesDir, `${title}.json`);
+      fs.writeFileSync(filePath, JSON.stringify(article));
+    }
     return article;
   }
 }
