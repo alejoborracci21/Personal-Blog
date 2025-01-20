@@ -30,7 +30,6 @@ export class ArticlesService {
     const filePath = path.join(this.articlesDir, `${title}.json`);
     const article: Article = {
       id,
-      date,
       title,
       content,
       publishedAt: new Date().toISOString(),
@@ -60,7 +59,7 @@ export class ArticlesService {
       });
 
     if (!article) {
-      throw new NotFoundException(`Article with ID ${id} not found.`);
+      throw new Error(`Article with ID ${id} not found.`);
     }
 
     return article;
@@ -69,12 +68,30 @@ export class ArticlesService {
   updateArticle(id: string, title: string, content: string): Article {
     const article = this.getArticleById(id);
     if (article) {
+      const oldFilePath = path.join(this.articlesDir, `${article.title}.json`);
       article.title = title;
       article.content = content;
       article.publishedAt = new Date().toISOString();
-      const filePath = path.join(this.articlesDir, `${title}.json`);
-      fs.writeFileSync(filePath, JSON.stringify(article));
+      const newFilePath = path.join(this.articlesDir, `${title}.json`);
+      
+      if (oldFilePath !== newFilePath) {
+        fs.unlinkSync(oldFilePath);
+      }
+      
+      fs.writeFileSync(newFilePath, JSON.stringify(article));
     }
     return article;
+  }
+
+  deleteArticle(id: string): string {
+    const article = this.getArticleById(id);
+
+    if (article) {
+      const filePath = path.join(this.articlesDir, `${article.title}.json`);
+      fs.unlinkSync(filePath);
+      return `Article with ID ${id} deleted successfully.`;
+    } else {
+      throw new Error(`Article with ID ${id} not found.`);
+    }
   }
 }
